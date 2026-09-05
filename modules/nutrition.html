@@ -405,6 +405,169 @@
     }
     .photo-retirer:hover { color: var(--danger); }
 
+    /* ── Bascule Aujourd'hui / Historique ── */
+    .vue-toggle {
+      display: flex;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-sm);
+      background: var(--surface-card);
+      border-radius: var(--radius-full);
+      padding: 4px;
+      box-shadow: var(--surface-card-shadow);
+    }
+    .vue-toggle-btn {
+      flex: 1;
+      border: none;
+      background: none;
+      padding: 9px 12px;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+    }
+    .vue-toggle-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* ── Historique ── */
+    .historique-jour {
+      background: var(--surface-card);
+      border-radius: var(--radius-md);
+      box-shadow: var(--surface-card-shadow);
+      padding: var(--space-md);
+      margin-bottom: var(--space-sm);
+    }
+    .historique-jour-titre {
+      font-weight: 700;
+      font-size: var(--font-size-base);
+      margin-bottom: var(--space-sm);
+    }
+    .historique-section {
+      margin-bottom: var(--space-sm);
+    }
+    .historique-section:last-child { margin-bottom: 0; }
+    .historique-section-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .historique-vignettes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+    }
+    .historique-vignette {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-sm);
+      border: none;
+      padding: 0;
+      overflow: hidden;
+      cursor: pointer;
+      background: var(--accent-light);
+      flex-shrink: 0;
+      position: relative;
+    }
+    .historique-vignette img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .historique-vignette-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .historique-vide {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: var(--font-size-sm);
+      padding: var(--space-xl) var(--space-md);
+    }
+
+    /* ── Modale photo ── */
+    .photo-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 200;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .photo-modal.visible { display: flex; }
+    .photo-modal-content {
+      width: 100%;
+      max-width: 480px;
+      max-height: 85vh;
+      overflow-y: auto;
+      background: var(--surface-card);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: var(--space-md);
+      position: relative;
+    }
+    .photo-modal-close {
+      position: absolute;
+      top: var(--space-sm);
+      right: var(--space-sm);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent-light);
+      color: var(--text-primary);
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .photo-modal-img {
+      display: block;
+      width: 100%;
+      max-width: 260px;
+      margin: 0 auto var(--space-sm);
+      border-radius: var(--radius-md);
+    }
+    .photo-modal-date {
+      text-align: center;
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      margin-bottom: var(--space-sm);
+    }
+    .photo-modal-aliments {
+      font-weight: 700;
+      margin-bottom: var(--space-xs);
+      text-align: center;
+    }
+    .photo-modal-badges {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: var(--space-xs);
+    }
+    .photo-modal-kcal {
+      text-align: center;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: var(--space-xs);
+    }
+    .photo-modal-commentaire {
+      text-align: center;
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
     .mention-legale {
       font-size: var(--font-size-xs);
       color: var(--text-muted);
@@ -493,6 +656,14 @@
 </header>
 
 <main class="page-main" id="main-content">
+
+  <!-- ── BASCULE VUES ── -->
+  <div class="vue-toggle" role="tablist">
+    <button class="vue-toggle-btn active" id="btn-vue-jour" role="tab" aria-selected="true">Aujourd'hui</button>
+    <button class="vue-toggle-btn" id="btn-vue-historique" role="tab" aria-selected="false">📅 Historique</button>
+  </div>
+
+  <div id="vue-aujourdhui">
 
   <!-- ── REPAS ── -->
   <div id="repas-matin"  class="repas-section" data-repas="matin"></div>
@@ -606,7 +777,24 @@
     et durable — pas un avis médical.
   </p>
 
+  </div><!-- /vue-aujourdhui -->
+
+  <div id="vue-historique" hidden></div>
+
 </main>
+
+<!-- ── MODALE PHOTO ── -->
+<div class="photo-modal" id="photo-modal">
+  <div class="photo-modal-content">
+    <button class="photo-modal-close" id="photo-modal-close" aria-label="Fermer">×</button>
+    <img class="photo-modal-img" id="photo-modal-img" alt="Photo du repas" />
+    <div class="photo-modal-date" id="photo-modal-date"></div>
+    <div class="photo-modal-aliments" id="photo-modal-aliments"></div>
+    <div class="photo-modal-badges" id="photo-modal-badges"></div>
+    <div class="photo-modal-kcal" id="photo-modal-kcal"></div>
+    <div class="photo-modal-commentaire" id="photo-modal-commentaire"></div>
+  </div>
+</div>
 
 <script>
 (() => {
@@ -648,7 +836,11 @@
     } catch {}
   }
   function save() {
-    localStorage.setItem(KEY, JSON.stringify(state));
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+    } catch (e) {
+      console.warn('[Nutrition] Sauvegarde impossible (espace localStorage plein ?)', e);
+    }
   }
 
   // ─── Repas ─────────────────────────────────────────────────────────────────
@@ -753,7 +945,11 @@
 
     try {
       const base64 = await toBase64(file);
-      const analyse = await appellerAPI(base64, file.type);
+      const [analyse, thumbnail] = await Promise.all([
+        appellerAPI(base64, file.type),
+        compressThumbnail(file).catch(() => null), // la miniature ne doit jamais bloquer l'analyse
+      ]);
+      if (thumbnail) analyse.photo = thumbnail;
 
       document.getElementById(`loading-${repasId}`).classList.remove('visible');
       afficherPanelConfirmation(repasId, analyse);
@@ -769,6 +965,39 @@
       reader.onload  = () => resolve(reader.result.split(',')[1]);
       reader.onerror = reject;
       reader.readAsDataURL(file);
+    });
+  }
+
+  function fileToDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Redimensionne et recompresse la photo en miniature JPEG (~200px, q~65%) pour un stockage léger dans localStorage.
+  function compressThumbnail(file, maxDim = 200, quality = 0.65) {
+    return new Promise((resolve, reject) => {
+      fileToDataURL(file).then(dataURL => {
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if (width > height) {
+            if (width > maxDim) { height = Math.round(height * maxDim / width); width = maxDim; }
+          } else {
+            if (height > maxDim) { width = Math.round(width * maxDim / height); height = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = dataURL;
+      }).catch(reject);
     });
   }
 
@@ -1058,6 +1287,92 @@
     el.textContent = texte;
   }
 
+  // ─── Historique ────────────────────────────────────────────────────────────
+  function getJoursHistorique() {
+    const jours = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (/^nutrition-\d{4}-\d{2}-\d{2}$/.test(key)) jours.push(key.slice('nutrition-'.length));
+    }
+    return jours.sort().reverse(); // plus récent en premier
+  }
+
+  function formatDateJour(dateStr) {
+    if (dateStr === TODAY) return "Aujourd'hui";
+    const d = new Date(`${dateStr}T00:00:00`);
+    const texte = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    return texte.charAt(0).toUpperCase() + texte.slice(1);
+  }
+
+  function buildHistorique() {
+    const conteneur = document.getElementById('vue-historique');
+    const joursHTML = getJoursHistorique().map(dateStr => {
+      let s;
+      try { s = JSON.parse(localStorage.getItem(`nutrition-${dateStr}`)); } catch { s = null; }
+      if (!s || !s.repas) return '';
+
+      const sectionsHTML = ['matin', 'midi', 'soir'].map(repasId => {
+        const photos = s.repas[repasId];
+        if (!Array.isArray(photos) || photos.length === 0) return '';
+        const cfg = REPAS_CONFIG[repasId];
+        const vignettesHTML = photos.map((p, i) => {
+          const contenu = p.photo
+            ? `<img src="${p.photo}" alt="${(p.aliments || []).join(', ')}" />`
+            : `<div class="historique-vignette-placeholder">📷</div>`;
+          return `<button class="historique-vignette" data-jour="${dateStr}" data-repas="${repasId}" data-index="${i}">${contenu}</button>`;
+        }).join('');
+        return `
+          <div class="historique-section">
+            <div class="historique-section-label">${cfg.icone} ${cfg.label}</div>
+            <div class="historique-vignettes">${vignettesHTML}</div>
+          </div>`;
+      }).join('');
+
+      if (!sectionsHTML.trim()) return '';
+      return `
+        <div class="historique-jour">
+          <div class="historique-jour-titre">${formatDateJour(dateStr)}</div>
+          ${sectionsHTML}
+        </div>`;
+    }).filter(Boolean).join('');
+
+    conteneur.innerHTML = joursHTML || '<p class="historique-vide">Aucune photo de repas enregistrée pour l’instant.</p>';
+
+    conteneur.querySelectorAll('.historique-vignette').forEach(btn => {
+      btn.addEventListener('click', () => {
+        let s;
+        try { s = JSON.parse(localStorage.getItem(`nutrition-${btn.dataset.jour}`)); } catch { s = null; }
+        const p = s?.repas?.[btn.dataset.repas]?.[parseInt(btn.dataset.index, 10)];
+        if (p) ouvrirPhotoModal(p, btn.dataset.jour);
+      });
+    });
+  }
+
+  function ouvrirPhotoModal(analyse, dateStr) {
+    document.getElementById('photo-modal-img').src = analyse.photo || '';
+    document.getElementById('photo-modal-date').textContent = formatDateJour(dateStr);
+    document.getElementById('photo-modal-aliments').textContent = (analyse.aliments || []).join(', ') || '—';
+    document.getElementById('photo-modal-badges').innerHTML = renderBadges(analyse);
+    document.getElementById('photo-modal-kcal').textContent = analyse.calories_approx ? `~${analyse.calories_approx} kcal` : '';
+    document.getElementById('photo-modal-commentaire').textContent = analyse.commentaire || '';
+    document.getElementById('photo-modal').classList.add('visible');
+  }
+
+  function fermerPhotoModal() {
+    document.getElementById('photo-modal').classList.remove('visible');
+  }
+
+  function afficherVue(vue) {
+    const estJour = vue === 'jour';
+    document.getElementById('vue-aujourdhui').hidden = !estJour;
+    document.getElementById('vue-historique').hidden = estJour;
+    document.getElementById('btn-vue-jour').classList.toggle('active', estJour);
+    document.getElementById('btn-vue-jour').setAttribute('aria-selected', String(estJour));
+    document.getElementById('btn-vue-historique').classList.toggle('active', !estJour);
+    document.getElementById('btn-vue-historique').setAttribute('aria-selected', String(!estJour));
+    if (!estJour) buildHistorique();
+  }
+
   // ─── Init ──────────────────────────────────────────────────────────────────
   load();
   ['matin', 'midi', 'soir'].forEach(buildRepasSection);
@@ -1065,6 +1380,16 @@
   renderSommeil();
   renderPas();
   updateBilan();
+
+  document.getElementById('btn-vue-jour').addEventListener('click', () => afficherVue('jour'));
+  document.getElementById('btn-vue-historique').addEventListener('click', () => afficherVue('historique'));
+  document.getElementById('photo-modal-close').addEventListener('click', fermerPhotoModal);
+  document.getElementById('photo-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'photo-modal') fermerPhotoModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') fermerPhotoModal();
+  });
 })();
 </script>
 <script src="../js/assistant.js" defer></script>
