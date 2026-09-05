@@ -1,7 +1,7 @@
 // Service Worker — Remise en forme PWA
 // Stratégie : Cache First pour les assets statiques, Network First pour les données JSON
 
-const CACHE_NAME = 'remise-en-forme-v8';
+const CACHE_NAME = 'remise-en-forme-v9';
 
 // Dériver le chemin de base depuis la portée du SW (fonctionne en local ET sur GitHub Pages)
 // Ex: '/' en local, '/remise-en-forme-app/' sur GitHub Pages
